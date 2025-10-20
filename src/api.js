@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_URL = 'http://localhost:9090/api';
+export const API_URL = 'https://springboot-resumesystem-1.onrender.com/api';
 const token = localStorage.getItem('token');
 
 export const addEducation = (education,userId) => axios.post(`${API_URL}/education/${userId}`, education,{

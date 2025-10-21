@@ -64,7 +64,7 @@ const Dashboard = () => {
             name: user.name || '',
             email: user.email || '',
             phone: user.phone || '',
-            address: user.location || '',
+            location: user.location || '',
             linkedin: user.linkedin || '',
             github: user.github || '',
             portfolio: user.portfolio || ''
@@ -88,6 +88,9 @@ const Dashboard = () => {
 
   load();
 }, [navigate]);
+useEffect(() => {
+  console.log("Resume Data Updated:", resumeData);
+}, [resumeData]);
 
  function logout() {
     localStorage.removeItem("token");

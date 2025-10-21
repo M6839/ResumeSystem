@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { API_URL } from '../api';
 import axios from 'axios';
 const Education = ({ resumeData, setResumeData }) => {
+  const token = localStorage.getItem('token');
   const userId=resumeData.id;
  useEffect(() => {
     axios.get(`${API_URL}/education/${userId}`,{

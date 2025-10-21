@@ -1,9 +1,16 @@
 import React from 'react'
 import { useEffect } from 'react';
-import { getCertifications, addCertification, updateCertification, deleteCertification } from '../api';
+import { API_URL } from '../api';
+import axios from 'axios';
 const Certification = ({resumeData,setResumeData}) => {
+  const token = localStorage.getItem('token');
+  const userId=resumeData.id;
      useEffect(() => {
-        getCertifications(resumeData.id).then(res => {
+        axios.get(`${API_URL}/certification/${userId}`,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    }).then(res => {
           setResumeData({ ...resumeData, certifications: res.data });
         });
       }, []);
@@ -14,21 +21,33 @@ const Certification = ({resumeData,setResumeData}) => {
      issueDate:'',
      expiryDate:''
 };
-        const res = await addCertification(newCertifi,resumeData.id);
+        const res = await axios.post(`${API_URL}/certification/${userId}`, newCertifi,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
         setResumeData({ ...resumeData, certifications: [...resumeData.certifications, res.data] });
       };
     
       const handleCertificationChange = async (id, field, value) => {
         const certiToUpdate = resumeData.certifications.find(c=> c.id === id);
         certiToUpdate[field] = value;
-        await updateCertification(id, certiToUpdate);
+        await axios.put(`${API_URL}/certification/${id}`,certiToUpdate,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
         setResumeData({
           ...resumeData,
           certifications: resumeData.certifications.map(c=> (c.id === id ? certiToUpdate : c))
         });
       };
        const handleRemoveCertification = async (id) => {
-        await deleteCertification(id);
+        await axios.delete(`${API_URL}/certification/${id}`,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
         setResumeData({ ...resumeData, education: resumeData.education.filter(c => c.id !== id) });
       };
   return (

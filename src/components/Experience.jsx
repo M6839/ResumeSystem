@@ -1,12 +1,16 @@
 import React from 'react';
-import { useState } from 'react';
 import { useEffect } from 'react';
-import { getExperiences, addExperience, updateExperience, deleteExperience } from '../api';
+import { API_URL } from '../api';
+import axios from 'axios';
 const Experience = ({ resumeData, setResumeData }) => {
-
-  
+const token = localStorage.getItem('token');
+  const userId=resumeData.id;
 useEffect(() => {
-    getExperiences(resumeData.id).then(res => {
+   axios.get(`${API_URL}/experience/${userId}`,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    }).then(res => {
       setResumeData({ ...resumeData, experience: res.data });
     });
   }, []);
@@ -17,21 +21,33 @@ useEffect(() => {
       duration: '',
       location: '',
       description: ''};
-    const res = await addExperience(newExp,resumeData.id);
+    const res = await axios.post(`${API_URL}/experience/${userId}`, newExp,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
     setResumeData({ ...resumeData, experience: [...resumeData.experience, res.data] });
   };
 
   const handleExperienceChange = async (id, field, value) => {
     const expToUpdate = resumeData.experience.find(e => e.id === id);
     expToUpdate[field] = value;
-    await updateExperience(id, expToUpdate);
+    await axios.put(`${API_URL}/experience/${id}`, expToUpdate,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
     setResumeData({
       ...resumeData,
       experience: resumeData.experience.map(e => (e.id === id ? expToUpdate : e))
     });
   };
    const handleRemoveExperience = async (id) => {
-    await deleteExperience(id);
+    await axios.delete(`${API_URL}/experience/${id}`,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
     setResumeData({ ...resumeData, experience: resumeData.experience.filter(e => e.id !== id) });
   };
 

@@ -1,31 +1,48 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { getEducations, addEducation, updateEducation, deleteEducation } from '../api';
+import { API_URL } from '../api';
+import axios from 'axios';
 const Education = ({ resumeData, setResumeData }) => {
-  
+  const userId=resumeData.id;
  useEffect(() => {
-    getEducations(resumeData.id).then(res => {
+    axios.get(`${API_URL}/education/${userId}`,{
+          headers: {
+              Authorization: `Bearer ${token}`,
+            },
+        }).then(res => {
       setResumeData({ ...resumeData, education: res.data });
     });
   }, []);
 
   const handleAddEducation = async () => {
     const newEdu = { instistution: '', degree: '', year: '', cgpa: '', achievements: ''};
-    const res = await addEducation(newEdu,resumeData.id);
+    const res = await axios.post(`${API_URL}/education/${userId}`,newEdu,{
+          headers: {
+              Authorization: `Bearer ${token}`,
+            },
+        });
     setResumeData({ ...resumeData, education: [...resumeData.education, res.data] });
   };
 
   const handleEducationChange = async (id, field, value) => {
     const eduToUpdate = resumeData.education.find(e => e.id === id);
     eduToUpdate[field] = value;
-    await updateEducation(id, eduToUpdate);
+    await axios.put(`${API_URL}/education/${id}`, eduToUpdate,{
+          headers: {
+              Authorization: `Bearer ${token}`,
+            },
+        });
     setResumeData({
       ...resumeData,
       education: resumeData.education.map(e => (e.id === id ? eduToUpdate : e))
     });
   };
    const handleDeleteEducation = async (id) => {
-    await deleteEducation(id);
+    await axios.delete(`${API_URL}/education/${id}`,{
+          headers: {
+              Authorization: `Bearer ${token}`,
+            },
+        });
     setResumeData({ ...resumeData, education: resumeData.education.filter(e => e.id !== id) });
   };
 

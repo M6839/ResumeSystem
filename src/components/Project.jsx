@@ -1,31 +1,49 @@
 import React from 'react'
 import { useEffect } from 'react';
-import { getProjects, addProject, updateProject, deleteProject } from '../api';
-import { resume } from 'react-dom/server';
+import { API_URL } from '../api';
+import axios from 'axios';
 const Project = ({resumeData,setResumeData}) => {
+  const token = localStorage.getItem('token');
+  const userId=resumeData.id;
     useEffect(() => {
-        getProjects(resumeData.id).then(res => {
+       axios.get(`${API_URL}/project/${userId}`,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    }).then(res => {
           setResumeData({ ...resumeData, projects: res.data });
         });
       }, []);
     
       const handleAddProject = async () => {
         const newProje = { title:'', link: '', technologies: '', description: ''};
-        const res = await addProject(newProje,resumeData.id);
+        const res = await axios.post(`${API_URL}/project/${userId}`,newProje,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
         setResumeData({ ...resumeData, projects:[...resumeData.projects, res.data] });
       };
     
       const handleProjectChange = async (id, field, value) => {
         const projeToUpdate = resumeData.projects.find(p => p.id === id);
         projeToUpdate[field] = value;
-        await updateProject(id, projeToUpdate);
+        await axios.put(`${API_URL}/project/${id}`, projeToUpdate,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
         setResumeData({
           ...resumeData,
         projects: resumeData.projects.map(p=> (p.id === id ? projeToUpdate: e))
         });
       };
        const handleRemoveProject = async (id) => {
-        await deleteProject(id);
+        await axios.delete(`${API_URL}/project/${id}`,{
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
         setResumeData({ ...resumeData, projects: resumeData.projects.filter(p => p.id !== id) });
       };
     
